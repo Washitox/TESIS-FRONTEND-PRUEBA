@@ -28,7 +28,7 @@ function SolicitarTrabajoUser() {
       const token = getToken();
       if (!token) return;
       const response = await axios.get(
-        "http://localhost:8085/api-user/listar-solicitudes",
+        `${import.meta.env.VITE_BACKEND_URL_API_USER}/historial-solicitud`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -73,7 +73,7 @@ function SolicitarTrabajoUser() {
       }
 
       await axios.post(
-        "http://localhost:8085/api-user/crear-solicitud",
+        "http://localhost:8085/api-user/crear-solicitud",    
         requestData,
         {
           headers: {
@@ -196,55 +196,169 @@ function SolicitarTrabajoUser() {
                   <option value="">Todos</option>
                   <option value="ACEPTADA">Aceptadas</option>
                   <option value="PENDIENTE">Pendientes</option>
-                  <option value="PENDIENTE">Aceptar Cot</option>
                 </select>
               </div>
             </div>
+
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-gray-700">
                   <tr>
-                    <th className="p-3">ID</th>
-                    <th className="p-3">Nombre</th>
-                    <th className="p-3">Descripción</th>
-                    <th className="p-3">Prioridad</th>
-                    <th className="p-3">Precio</th>
-                    <th className="p-3">Estado Solicitud</th>
-                    <th className="p-3">Acciones</th>
+                    <th className="p-3">ID Solicitud</th>
+                    <th className="p-3">Descripción Inicial</th>
+                    <th className="p-3">Descripción Trabajo</th>
                     <th className="p-3">Estado</th>
+                    <th className="p-3">Prioridad</th>
+                    <th className="p-3">Cotización</th>
+                    <th className="p-3">Estado Cotización</th>
+                    <th className="p-3">Fecha Creación</th>
+                    <th className="p-3">Hora Creación</th>
+                    <th className="p-3">Estado Pago</th>
+                    <th className="p-3">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedSolicitudes.map((solicitud, idx) => (
                     <tr
-                      key={solicitud.id}
+                      key={solicitud.idSolicitud}
                       className={idx % 2 === 0 ? "bg-gray-600" : "bg-gray-700"}
                     >
-                      <td className="p-3">{solicitud.id}</td>
-                      <td className="p-3">{solicitud.nombre}</td>
-                      <td className="p-3">{solicitud.descripcion}</td>
-                      <td className="p-3">{solicitud.prioridad}</td>
-                      <td className="p-3">{solicitud.precio}</td>
-                      <td className="p-3">{solicitud.estadoSolicitud}</td>
+                      <td className="p-3">{solicitud.idSolicitud || "No disponible"}</td>
+                      <td className="p-3">{solicitud.descripcionInicial || "No disponible"}</td>
+                      <td className="p-3">{solicitud.descripcionTrabajo || "No disponible"}</td>
+                      <td className="p-3">{solicitud.estado || "No disponible"}</td>
+                      <td className="p-3">{solicitud.prioridad || "No disponible"}</td>
+                      <td className="p-3">
+                        {solicitud.cotizacion !== null
+                          ? `$${solicitud.cotizacion.toFixed(2)}`
+                          : "No disponible"}
+                      </td>
+                      <td className="p-3">{solicitud.cotizacionAceptada || "No disponible"}</td>
+                      <td className="p-3">
+                        {solicitud.fechaCreacion
+                          ? new Date(solicitud.fechaCreacion).toLocaleDateString()
+                          : "No disponible"}
+                      </td>
+                      <td className="p-3">{solicitud.horaCreacion || "No disponible"}</td>
+                      <td className="p-3">{solicitud.pago || "No disponible"}</td>
                       <td className="p-3">
                         <button
-                          onClick={() => console.log(`Acción sobre la solicitud ${solicitud.id}`)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
+                          onClick={async () => {
+                            try {
+                              const token = getToken();
+                              await axios.put(
+                                `http://localhost:8085/api-user/aceptar-cotizacion/${solicitud.idSolicitud}`,
+                                {},
+                                {
+                                  headers: { Authorization: `Bearer ${token}` },
+                                }
+                              );
+                              fetchSolicitudes();
+                              setSuccessMessage("Cotización aceptada correctamente.");
+                            } catch (error) {
+                              console.error(error);
+                              setErrorMessage("Error al aceptar la cotización.");
+                            }
+                          }}
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded mr-2"
                         >
-                          Detalles
+                          Aceptar
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const token = getToken();
+                              await axios.put(
+                                `http://localhost:8085/api-user/rechazar-cotizacion/${solicitud.idSolicitud}`,
+                                {},
+                                {
+                                  headers: { Authorization: `Bearer ${token}` },
+                                }
+                              );
+                              fetchSolicitudes();
+                              setSuccessMessage("Cotización rechazada correctamente.");
+                            } catch (error) {
+                              console.error(error);
+                              setErrorMessage("Error al rechazar la cotización.");
+                            }
+                          }}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mr-2"
+                        >
+                          Rechazar
+                        </button>
+                        <button
+                          onClick={async () => {
+                            const nuevaDescripcion = prompt(
+                              "Ingrese nueva descripción inicial:"
+                            );
+                            if (nuevaDescripcion) {
+                              try {
+                                const token = getToken();
+                                await axios.put(
+                                  `http://localhost:8085/api-user/modificar-solicitud/${solicitud.idSolicitud}`,
+                                  {
+                                    descripcionInicial: nuevaDescripcion,
+                                  },
+                                  {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  }
+                                );
+                                fetchSolicitudes();
+                                setSuccessMessage(
+                                  "Descripción modificada correctamente."
+                                );
+                              } catch (error) {
+                                console.error(error);
+                                setErrorMessage(
+                                  "Error al modificar la descripción inicial."
+                                );
+                              }
+                            }
+                          }}
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (
+                              window.confirm(
+                                "¿Está seguro de que desea eliminar esta solicitud?"
+                              )
+                            ) {
+                              try {
+                                const token = getToken();
+                                await axios.delete(
+                                  `http://localhost:8085/api-user/eliminar-solicitud/${solicitud.idSolicitud}`,
+                                  {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  }
+                                );
+                                fetchSolicitudes();
+                                setSuccessMessage(
+                                  "Solicitud eliminada correctamente."
+                                );
+                              } catch (error) {
+                                console.error(error);
+                                setErrorMessage("Error al eliminar la solicitud.");
+                              }
+                            }
+                          }}
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
+                        >
+                          Eliminar
                         </button>
                       </td>
-                      <td className="p-3">{solicitud.estado}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+
             <div className="flex justify-between items-center mt-4">
               <span className="text-sm text-gray-400">
                 Mostrando {currentPage * itemsPerPage - itemsPerPage + 1} -{" "}
-                {Math.min(currentPage * itemsPerPage, solicitudes.length)} de {solicitudes.length}{" "}
-                entradas
+                {Math.min(currentPage * itemsPerPage, solicitudes.length)} de {solicitudes.length} entradas
               </span>
               <div className="flex gap-2">
                 <button

@@ -9,7 +9,6 @@ export default function SolicitudesRegistro() {
   const [searchTerm, setSearchTerm] = useState("");
   const [entries, setEntries] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loadingStates, setLoadingStates] = useState({});
   const [isFetching, setIsFetching] = useState(false);
 
   const getToken = () => localStorage.getItem("authToken");
@@ -32,40 +31,24 @@ export default function SolicitudesRegistro() {
     }
   };
 
-  const fetchById = async (id) => {
-    try {
-      const token = getToken();
-      const response = await axios.post(
-        "http://localhost:8085/api/admin/buscar-usuario",
-        { id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      // Si se encuentra, reemplazar las solicitudes con el único resultado
-      setSolicitudes([response.data]);
-    } catch (error) {
-      console.error("Error al buscar usuario por ID:", error);
-      setSolicitudes([]); // Vaciar la tabla si no se encuentra
-    }
-  };
+  useEffect(() => {
+    fetchSolicitudes();
+  }, []);
 
   const handleSearch = () => {
-    if (!isNaN(searchTerm) && searchTerm.trim() !== "") {
-      // Si el término de búsqueda es un número, buscar por ID
-      fetchById(Number(searchTerm));
-    } else {
-      // Si no, filtrar por nombre
-      setSolicitudes((prevSolicitudes) =>
-        prevSolicitudes.filter((solicitud) =>
-          solicitud.username.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    }
+    return solicitudes.filter((solicitud) => {
+      const matchesId = solicitud.id
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesUsername = solicitud.username
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return matchesId || matchesUsername;
+    });
   };
 
   const handleAccept = async (id) => {
-    setLoadingStates((prev) => ({ ...prev, [id]: "loading" }));
     try {
       const token = getToken();
       await axios.put(
@@ -78,15 +61,12 @@ export default function SolicitudesRegistro() {
       setSolicitudes((prev) =>
         prev.filter((solicitud) => solicitud.id !== id)
       );
-      setLoadingStates((prev) => ({ ...prev, [id]: "success" }));
     } catch (error) {
       console.error("Error al aceptar usuario:", error);
-      setLoadingStates((prev) => ({ ...prev, [id]: "error" }));
     }
   };
 
   const handleDelete = async (id) => {
-    setLoadingStates((prev) => ({ ...prev, [id]: "loading" }));
     try {
       const token = getToken();
       await axios.post(
@@ -97,24 +77,19 @@ export default function SolicitudesRegistro() {
       setSolicitudes((prev) =>
         prev.filter((solicitud) => solicitud.id !== id)
       );
-      setLoadingStates((prev) => ({ ...prev, [id]: "success" }));
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
-      setLoadingStates((prev) => ({ ...prev, [id]: "error" }));
     }
   };
 
-  useEffect(() => {
-    fetchSolicitudes();
-  }, []);
-
+  const filteredSolicitudes = handleSearch();
+  const totalPages = Math.ceil(filteredSolicitudes.length / entries);
   const indexOfLastEntry = currentPage * entries;
   const indexOfFirstEntry = indexOfLastEntry - entries;
-  const currentSolicitudes = solicitudes.slice(
+  const currentSolicitudes = filteredSolicitudes.slice(
     indexOfFirstEntry,
     indexOfLastEntry
   );
-  const totalPages = Math.ceil(solicitudes.length / entries);
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
@@ -167,9 +142,6 @@ export default function SolicitudesRegistro() {
                   placeholder="Buscar por ID o Nombre..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") handleSearch();
-                  }}
                   className="bg-gray-700 text-white p-2 rounded"
                 />
               </div>
@@ -186,7 +158,6 @@ export default function SolicitudesRegistro() {
                       <th className="p-3">Rol</th>
                       <th className="p-3">Permiso</th>
                       <th className="p-3">Acciones</th>
-                      <th className="p-3">Estado</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -220,17 +191,6 @@ export default function SolicitudesRegistro() {
                             Eliminar
                           </button>
                         </td>
-                        <td className="p-3">
-                          {loadingStates[solicitud.id] === "loading" && (
-                            <span className="text-yellow-500">Cargando...</span>
-                          )}
-                          {loadingStates[solicitud.id] === "success" && (
-                            <span className="text-green-500">✔</span>
-                          )}
-                          {loadingStates[solicitud.id] === "error" && (
-                            <span className="text-red-500">✘</span>
-                          )}
-                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -240,8 +200,8 @@ export default function SolicitudesRegistro() {
               <div className="flex justify-between items-center mt-4">
                 <span>
                   Mostrando {indexOfFirstEntry + 1} -{" "}
-                  {Math.min(indexOfLastEntry, solicitudes.length)} de{" "}
-                  {solicitudes.length} entradas
+                  {Math.min(indexOfLastEntry, filteredSolicitudes.length)} de{" "}
+                  {filteredSolicitudes.length} entradas
                 </span>
                 <div className="flex space-x-2">
                   <button

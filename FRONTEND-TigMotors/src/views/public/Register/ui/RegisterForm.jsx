@@ -30,7 +30,7 @@ export default function RegisterForm() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8085/api/v1/register-user',
+        `${import.meta.env.VITE_BACKEND_URL_API_V1}/register-user`,
         formattedData,
         {
           headers: {

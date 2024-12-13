@@ -23,7 +23,7 @@ export default function RecuperarContraseñaForm() {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        `http://localhost:8085/api/v1/send-token?email=${data.email}`
+        `${import.meta.env.VITE_BACKEND_URL_API_V1}/send-token?email=${data.email}`
       );
       console.log("Token de verificación enviado:", response.data);
 

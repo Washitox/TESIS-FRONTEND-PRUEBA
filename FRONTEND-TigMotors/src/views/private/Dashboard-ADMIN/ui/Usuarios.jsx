@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { Input, Label, Button } from "keep-react";
 import { FaEye, FaEyeSlash, FaPencilAlt, FaSave } from "react-icons/fa";
 import axios from "axios";
+import _ from "lodash";
 
 function Usuarios() {
   const {
@@ -149,36 +150,37 @@ function Usuarios() {
 };
   
 
-  const fetchByIdOrName = async () => {
-    try {
-      const token = getToken();
-      if (!token) return;
+const fetchByIdOrName = async (searchValue) => {
+  try {
+    const token = getToken();
+    if (!token) return;
 
-      if (!isNaN(searchTerm)) {
-        console.log("Buscando usuario por ID:", searchTerm);
-        const response = await axios.post(
-          "http://localhost:8085/api/admin/buscar-usuario",
-          { id: parseInt(searchTerm) },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log("Usuario encontrado:", response.data);
-        setUsers([response.data]);
-      } else if (searchTerm.trim() !== "") {
-        console.log("Buscando usuarios por nombre:", searchTerm);
-        const filteredUsers = users.filter((user) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setUsers(filteredUsers);
-      } else {
-        fetchUsers();
-      }
-    } catch (error) {
-      console.error("Error al buscar usuario:", error);
-      setErrorMessage("Error al buscar usuario.");
+    if (!isNaN(searchValue) && searchValue.trim() !== "") {
+      // Búsqueda por ID
+      const response = await axios.post(
+        "http://localhost:8085/api/admin/buscar-usuario",
+        { id: parseInt(searchValue) },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setUsers([response.data]); // Muestra el usuario encontrado
+    } else if (searchValue.trim() !== "") {
+      // Búsqueda por nombre
+      const filteredUsers = users.filter((user) =>
+        user.username.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setUsers(filteredUsers); // Muestra usuarios filtrados por nombre
+    } else {
+      // Si no hay búsqueda, muestra todos los usuarios
+      fetchUsers();
     }
-  };
+  } catch (error) {
+    console.error("Error al buscar usuario:", error);
+    setErrorMessage("Usuario no encontrado.");
+  }
+};
+
 
   useEffect(() => {
     fetchUsers();
@@ -420,7 +422,11 @@ function Usuarios() {
                 type="text"
                 placeholder="Buscar por ID o Nombre"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  const searchValue = e.target.value;
+                  setSearchTerm(searchValue); // Actualiza el término de búsqueda
+                  fetchByIdOrName(searchValue); // Llama a la función de búsqueda automáticamente
+                }}
                 className="bg-gray-700 text-white p-2 rounded"
               />
             </div>

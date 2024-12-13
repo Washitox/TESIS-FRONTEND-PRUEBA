@@ -26,7 +26,7 @@ export default function SignIn() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8085/api/v1/login-global",
+        `${import.meta.env.VITE_BACKEND_URL_API_V1}/login-global`,
         data
       );
 

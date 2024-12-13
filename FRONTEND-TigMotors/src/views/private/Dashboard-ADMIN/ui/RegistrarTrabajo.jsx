@@ -10,15 +10,29 @@ function RegistrarTrabajo() {
   const [priority, setPriority] = useState("MEDIA");
   const [quote, setQuote] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const getToken = () => {
+    return localStorage.getItem("authToken");
+  };
 
   // Fetch usernames from the API
   useEffect(() => {
     const fetchUsernames = async () => {
       try {
-        const response = await axios.get("http://localhost:8085/api/admin/lista-usuarios");
-        setUsernames(response.data.map(user => user.username));
+        const token = getToken();
+        if (!token) {
+          setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+          return;
+        }
+        const response = await axios.get("http://localhost:8085/api/admin/lista-nombres-usuarios", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsernames(response.data);
       } catch (error) {
-        console.error("Error fetching usernames:", error);
+        console.error("Error al obtener los nombres de usuarios:", error);
+        setErrorMessage("Error al cargar los nombres de usuarios.");
       }
     };
 
@@ -28,26 +42,45 @@ function RegistrarTrabajo() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!selectedUser || !initialDescription || !priority || !quote || !jobDescription) {
+      setErrorMessage("Todos los campos son obligatorios.");
+      return;
+    }
+
     const newRequest = {
       username: selectedUser,
-      initialDescription,
-      priority,
-      quote: parseFloat(quote).toFixed(2),
-      jobDescription
+      descripcionInicial: initialDescription,
+      prioridad: priority,
+      cotizacion: parseFloat(quote).toFixed(2),
+      descripcionTrabajo: jobDescription,
     };
 
     try {
-      await axios.post("http://localhost:8085/api/admin/crear-solicitud", newRequest);
-      alert("Solicitud enviada con éxito");
-      // Clear form after submission
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+        return;
+      }
+
+      await axios.post("http://localhost:8085/api/admin/crear-solicitud", newRequest, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      setSuccessMessage("Trabajo registrado exitosamente.");
       setSelectedUser("");
       setInitialDescription("");
       setPriority("MEDIA");
       setQuote("");
       setJobDescription("");
     } catch (error) {
-      console.error("Error submitting the request:", error);
-      alert("Error al enviar la solicitud");
+      console.error("Error al registrar el trabajo:", error);
+      setErrorMessage("Error al registrar el trabajo. Inténtalo de nuevo.");
     }
   };
 
@@ -66,8 +99,14 @@ function RegistrarTrabajo() {
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/2 mx-auto">
             <h1 className="text-2xl font-bold mb-6">Registrar Trabajo</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+              {successMessage && <p className="text-green-500">{successMessage}</p>}
+
+              {/* Campo de selección de usuario */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-200">Usuario</label>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-200">
+                  Usuario
+                </label>
                 <select
                   id="username"
                   value={selectedUser}
@@ -75,24 +114,32 @@ function RegistrarTrabajo() {
                   className="mt-1 block w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg shadow-sm focus:ring focus:ring-blue-500"
                 >
                   <option value="">Seleccione un usuario</option>
-                  {usernames.map((username) => (
-                    <option key={username} value={username}>{username}</option>
+                  {usernames.map((username, index) => (
+                    <option key={index} value={username}>
+                      {username}
+                    </option>
                   ))}
                 </select>
               </div>
 
+              {/* Descripción inicial */}
               <div>
-                <label htmlFor="initialDescription" className="block text-sm font-medium text-gray-200">Descripción Inicial</label>
+                <label htmlFor="initialDescription" className="block text-sm font-medium text-gray-200">
+                  Descripción Inicial
+                </label>
                 <textarea
                   id="initialDescription"
                   value={initialDescription}
                   onChange={(e) => setInitialDescription(e.target.value)}
                   className="mt-1 block w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg shadow-sm focus:ring focus:ring-blue-500"
-                />
+                ></textarea>
               </div>
 
+              {/* Prioridad */}
               <div>
-                <label htmlFor="priority" className="block text-sm font-medium text-gray-200">Prioridad</label>
+                <label htmlFor="priority" className="block text-sm font-medium text-gray-200">
+                  Prioridad
+                </label>
                 <select
                   id="priority"
                   value={priority}
@@ -105,8 +152,11 @@ function RegistrarTrabajo() {
                 </select>
               </div>
 
+              {/* Cotización */}
               <div>
-                <label htmlFor="quote" className="block text-sm font-medium text-gray-200">Cotización</label>
+                <label htmlFor="quote" className="block text-sm font-medium text-gray-200">
+                  Cotización
+                </label>
                 <input
                   type="number"
                   id="quote"
@@ -117,16 +167,20 @@ function RegistrarTrabajo() {
                 />
               </div>
 
+              {/* Descripción del trabajo */}
               <div>
-                <label htmlFor="jobDescription" className="block text-sm font-medium text-gray-200">Descripción del Trabajo</label>
+                <label htmlFor="jobDescription" className="block text-sm font-medium text-gray-200">
+                  Descripción del Trabajo
+                </label>
                 <textarea
                   id="jobDescription"
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   className="mt-1 block w-full bg-gray-700 border border-gray-600 text-gray-200 rounded-lg shadow-sm focus:ring focus:ring-blue-500"
-                />
+                ></textarea>
               </div>
 
+              {/* Botón de envío */}
               <div>
                 <button
                   type="submit"

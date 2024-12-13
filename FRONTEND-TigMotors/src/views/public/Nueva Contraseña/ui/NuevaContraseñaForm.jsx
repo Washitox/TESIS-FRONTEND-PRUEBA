@@ -23,7 +23,7 @@ export default function NuevaContraseñaForm() {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:8085/api/v1/password/reset", data, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL_API_V1}/password/reset`, data, {
         headers: {
           'Content-Type': 'application/json'
         }

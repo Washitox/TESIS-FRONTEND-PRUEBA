@@ -20,7 +20,7 @@ function UsuariosPersonal() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:8085/api/admin/lista-usuarios",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/lista-usuarios`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

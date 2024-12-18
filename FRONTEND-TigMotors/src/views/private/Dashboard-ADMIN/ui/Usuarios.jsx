@@ -158,7 +158,7 @@ const fetchByIdOrName = async (searchValue) => {
     if (!isNaN(searchValue) && searchValue.trim() !== "") {
       // Búsqueda por ID
       const response = await axios.post(
-        "http://localhost:8085/api/admin/buscar-usuario",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/buscar-usuario`,
         { id: parseInt(searchValue) },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -210,7 +210,7 @@ const fetchByIdOrName = async (searchValue) => {
       if (!token) return;
 
       const response = await axios.post(
-        "http://localhost:8085/api/admin/registrar-usuario",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/registrar-usuario`,
         formattedData,
         {
           headers: {

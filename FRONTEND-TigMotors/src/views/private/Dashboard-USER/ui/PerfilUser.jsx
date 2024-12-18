@@ -33,7 +33,7 @@ function PerfilUser() {
     try {
       const token = getToken();
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL_API_USER}/informacion-usuario`,
+        `${import.meta.env.VITE_BACKEND_URL}/informacion-usuario`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

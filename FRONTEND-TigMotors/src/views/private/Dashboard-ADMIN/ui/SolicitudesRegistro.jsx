@@ -18,7 +18,7 @@ export default function SolicitudesRegistro() {
       setIsFetching(true);
       const token = getToken();
       const response = await axios.get(
-        "http://localhost:8085/api/admin/users/pending",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/usuarios-pendientes`,   
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -52,7 +52,7 @@ export default function SolicitudesRegistro() {
     try {
       const token = getToken();
       await axios.put(
-        `http://localhost:8085/api/admin/users/approve/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/usuarios/aprobar/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

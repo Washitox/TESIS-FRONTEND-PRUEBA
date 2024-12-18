@@ -21,7 +21,7 @@ function Trabajos() {
         return;
       }
 
-      const response = await axios.get("http://localhost:8085/api/admin/historial-tickets", {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/historial-tickets`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

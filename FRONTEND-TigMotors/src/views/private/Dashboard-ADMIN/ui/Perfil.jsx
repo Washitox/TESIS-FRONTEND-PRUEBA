@@ -20,7 +20,7 @@ function Perfil() {
     try {
       setIsLoading(true);
       const token = getToken();
-      const response = await axios.get('http://localhost:8085/api/admin/me', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/informacion-perfil`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProfileData(response.data);

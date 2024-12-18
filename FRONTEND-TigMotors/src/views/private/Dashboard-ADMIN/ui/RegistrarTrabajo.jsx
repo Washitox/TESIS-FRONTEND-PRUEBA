@@ -26,7 +26,7 @@ function RegistrarTrabajo() {
           setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
           return;
         }
-        const response = await axios.get("http://localhost:8085/api/admin/lista-nombres-usuarios", {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/lista-nombres-usuarios`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsernames(response.data);
@@ -61,11 +61,11 @@ function RegistrarTrabajo() {
     try {
       const token = getToken();
       if (!token) {
-        setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+        setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");  
         return;
       }
 
-      await axios.post("http://localhost:8085/api/admin/crear-solicitud", newRequest, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/admin/crear-solicitud`, newRequest, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

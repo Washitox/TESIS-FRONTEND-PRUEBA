@@ -29,7 +29,7 @@ function SolicitudesTrabajo() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:8085/api/admin/historial-solicitudes",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/historial-solicitudes`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -77,7 +77,7 @@ function SolicitudesTrabajo() {
 
       // Aceptar la solicitud primero
       await axios.put(
-        `http://localhost:8085/api/admin/aceptar/${idSolicitud}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/aceptar/${idSolicitud}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -86,7 +86,7 @@ function SolicitudesTrabajo() {
 
       // Enviar datos editados
       await axios.put(
-        `http://localhost:8085/api/admin/anadir-cotizacion/${idSolicitud}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/anadir-cotizacion/${idSolicitud}`,
         {
           cotizacion: parseFloat(editedValues.cotizacion),
           descripcionTrabajo: editedValues.descripcionTrabajo,
@@ -124,7 +124,7 @@ function SolicitudesTrabajo() {
         return;
       }
       await axios.put(
-        `http://localhost:8085/api/admin/rechazar-solicitud/${idSolicitud}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/rechazar-solicitud/${idSolicitud}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -146,7 +146,7 @@ function SolicitudesTrabajo() {
         return;
       }
       await axios.delete(
-        `http://localhost:8085/api/admin/eliminar-solicitud/${idSolicitud}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/eliminar-solicitud/${idSolicitud}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

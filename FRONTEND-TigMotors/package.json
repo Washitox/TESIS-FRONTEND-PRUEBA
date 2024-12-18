@@ -13,6 +13,7 @@
     "@react-google-maps/api": "^2.20.3",
     "axios": "^1.7.9",
     "chart.js": "^4.4.6",
+    "jspdf": "^2.5.2",
     "jwt-decode": "^4.0.0",
     "keep-react": "^1.6.1",
     "leaflet": "^1.9.4",

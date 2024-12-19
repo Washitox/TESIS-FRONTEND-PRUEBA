@@ -66,7 +66,7 @@ function PerfilUser() {
       }
 
       await axios.put(
-        "http://localhost:8085/api-user/cambiar-contrasena",
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/cambiar-contrasena`,
         requestData,
         {
           headers: {
@@ -112,7 +112,7 @@ function PerfilUser() {
       for (const [key, value] of Object.entries(editableFields)) {
         const requestData = { [key]: value };
         await axios.put(
-          "http://localhost:8085/api-user/actualizar-informacion",
+          `${import.meta.env.VITE_BACKEND_URL}/api-user/actualizar-informacion`,
           requestData,
           {
             headers: {

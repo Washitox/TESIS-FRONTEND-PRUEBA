@@ -20,7 +20,7 @@ function TrabajoSolicitudForm({ fetchSolicitudes }) {
         return;
       }
       await axios.post(
-        "http://localhost:8085/api-user/crear-solicitud",
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/crear-solicitud`,
         {
           descripcionInicial: data.descripcionInicial,
           prioridad: data.prioridad,

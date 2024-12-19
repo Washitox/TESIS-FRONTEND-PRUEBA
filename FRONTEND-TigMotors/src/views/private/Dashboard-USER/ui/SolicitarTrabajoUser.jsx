@@ -39,7 +39,7 @@ const SolicitarTrabajoUser = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "http://localhost:8085/api-user/historial-solicitud",
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/historial-solicitud`,
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       setSolicitudes(response.data);
@@ -69,7 +69,7 @@ const SolicitarTrabajoUser = () => {
     setIsLoading(true);
     try {
       await axios.post(
-        "http://localhost:8085/api-user/crear-solicitud",
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/crear-solicitud`,
         { descripcionInicial, prioridad },
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
@@ -91,7 +91,7 @@ const SolicitarTrabajoUser = () => {
     setIsLoading(true);
     try {
       await axios.put(
-        `http://localhost:8085/api-user/modificar-solicitud/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/modificar-solicitud/${id}`,
         { descripcionInicial: editedDescriptions[id] },
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
@@ -112,7 +112,7 @@ const SolicitarTrabajoUser = () => {
     setIsLoading(true);
     try {
       await axios.delete(
-        `http://localhost:8085/api-user/eliminar-solicitud/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/eliminar-solicitud/${id}`,
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       setMessage({ text: "Solicitud eliminada exitosamente.", type: "success" });
@@ -131,7 +131,7 @@ const SolicitarTrabajoUser = () => {
     setIsLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:8085/api-user/aceptar-cotizacion/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/aceptar-cotizacion/${id}`,
         {},
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
@@ -154,7 +154,7 @@ const SolicitarTrabajoUser = () => {
     setIsLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:8085/api-user/rechazar-cotizacion/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/rechazar-cotizacion/${id}`,
         {},
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );

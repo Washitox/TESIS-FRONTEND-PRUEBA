@@ -23,7 +23,7 @@ function TrabajosUser() {
       }
 
       const response = await axios.get(
-        `http://localhost:8085/api-user/prioridad-ticket/${prioridad}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/prioridad-ticket/${prioridad}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTrabajos(response.data);
@@ -44,7 +44,7 @@ function TrabajosUser() {
       }
 
       const response = await axios.get(
-        `http://localhost:8085/api-user/estado-ticket/${estado}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/estado-ticket/${estado}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTrabajos(response.data);
@@ -85,7 +85,7 @@ function TrabajosUser() {
       }
 
       const response = await axios.get(
-        "http://localhost:8085/api-user/historial-solicitud",
+        `${import.meta.env.VITE_BACKEND_URL}/api-user/historial-solicitud`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTrabajos(response.data);

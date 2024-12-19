@@ -20,7 +20,7 @@ function UsuariosPersonal() {
         return;
       }
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/lista-usuarios`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/lista-usuarios`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

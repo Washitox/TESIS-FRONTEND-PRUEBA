@@ -3,39 +3,48 @@ import { Input, Label, Button } from 'keep-react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Spinner } from 'keep-react';
 
 export default function RecuperarContraseñaForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
   const [message, setMessage] = useState(null); // Estado para manejar el mensaje de éxito o error
   const [isError, setIsError] = useState(false); // Estado para determinar si el mensaje es de error
+  const [loading, setLoading] = useState(false); // Estado para manejar el spinner
 
   const FormError = ({ message }) => (
-    <div className="block font-medium text-red-500 text-sm">
-      {message}
-    </div>
+    <div className="block font-medium text-red-500 text-sm">{message}</div>
   );
 
   const onSubmit = async (data) => {
+    setLoading(true); // Activa el spinner
+    setMessage(null); // Limpia cualquier mensaje anterior
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL_API_V1}/send-token?email=${data.email}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/send-token?email=${data.email}`
       );
-      console.log("Token de verificación enviado:", response.data);
+      console.log('Token de verificación enviado:', response.data);
 
-      // Mostrar mensaje de éxito en verde
-      setMessage("Se envió la solicitud, por favor revise su correo electrónico.");
+      // Mostrar mensaje de éxito
+      setMessage('Se envió la solicitud, por favor revise su correo electrónico.');
       setIsError(false); // No es un error
     } catch (error) {
-      console.error("Error al enviar la solicitud de recuperación:", error.response?.data || error.message);
+      console.error(
+        'Error al enviar la solicitud de recuperación:',
+        error.response?.data || error.message
+      );
 
-      // Mostrar mensaje de error en rojo
-      setMessage("Error al enviar la solicitud, intente nuevamente.");
+      // Mostrar mensaje de error
+      setMessage(
+        error.response?.data?.message || 'Error al enviar la solicitud, intente nuevamente.'
+      );
       setIsError(true); // Es un error
+    } finally {
+      setLoading(false); // Desactiva el spinner
     }
   };
 
@@ -52,6 +61,11 @@ export default function RecuperarContraseñaForm() {
 
           {/* Formulario */}
           <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-[400px]">
+            {loading && (
+              <div className="flex justify-center my-4">
+                <Spinner /> {/* Muestra el spinner */}
+              </div>
+            )}
             <div className="space-y-5">
               <fieldset className="max-w-md space-y-1">
                 <Label htmlFor="email">

@@ -39,7 +39,7 @@ function Usuarios() {
     try {
       const token = getToken();
       if (!token) return;
-      const response = await axios.get("http://localhost:8085/api/admin/lista-usuarios", {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/lista-usuarios`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(response.data); // Actualiza el estado con los usuarios obtenidos
@@ -65,7 +65,7 @@ function Usuarios() {
       }
   
       await axios.post(
-        "http://localhost:8085/api/admin/users/delete",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/eliminar-usuarios`,   
         { userId: id }, // Enviar el cuerpo en formato JSON
         {
           headers: {
@@ -114,7 +114,7 @@ function Usuarios() {
   
       console.log("Datos enviados al backend para actualizar usuario:", requestData);
   
-      await axios.put("http://localhost:8085/api/admin/actualizar-datos-user", requestData, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/admin/actualizar-datos-user`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -123,7 +123,7 @@ function Usuarios() {
   
       console.log("Datos enviados al backend:", requestData);
   
-      await axios.put("http://localhost:8085/api/admin/actualizar-datos-user", requestData, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/admin/actualizar-datos-user`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

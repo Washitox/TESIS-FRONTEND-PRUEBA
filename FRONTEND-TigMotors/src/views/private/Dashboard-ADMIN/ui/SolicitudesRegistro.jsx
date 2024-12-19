@@ -3,6 +3,7 @@ import axios from "axios";
 import Sidebar from "./Sidebar";
 import HeaderAdmin from "./HeaderAdmin";
 import Estatus from "./Estatus";
+import { FaSpinner } from "react-icons/fa";
 
 export default function SolicitudesRegistro() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -10,6 +11,8 @@ export default function SolicitudesRegistro() {
   const [entries, setEntries] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [isFetching, setIsFetching] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const getToken = () => localStorage.getItem("authToken");
 
@@ -18,7 +21,7 @@ export default function SolicitudesRegistro() {
       setIsFetching(true);
       const token = getToken();
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/usuarios-pendientes`,   
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/usuarios-pendientes`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -26,6 +29,7 @@ export default function SolicitudesRegistro() {
       setSolicitudes(response.data);
     } catch (error) {
       console.error("Error al obtener solicitudes:", error);
+      setErrorMessage("Error al cargar las solicitudes.");
     } finally {
       setIsFetching(false);
     }
@@ -49,6 +53,9 @@ export default function SolicitudesRegistro() {
   };
 
   const handleAccept = async (id) => {
+    setSuccessMessage(null);
+    setErrorMessage(null);
+    setIsFetching(true);
     try {
       const token = getToken();
       await axios.put(
@@ -61,24 +68,35 @@ export default function SolicitudesRegistro() {
       setSolicitudes((prev) =>
         prev.filter((solicitud) => solicitud.id !== id)
       );
+      setSuccessMessage("Usuario aprobado correctamente.");
     } catch (error) {
       console.error("Error al aceptar usuario:", error);
+      setErrorMessage("Error al aprobar el usuario.");
+    } finally {
+      setIsFetching(false);
     }
   };
 
   const handleDelete = async (id) => {
+    setSuccessMessage(null);
+    setErrorMessage(null);
+    setIsFetching(true);
     try {
       const token = getToken();
       await axios.post(
-        "http://localhost:8085/api/admin/users/delete",
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/eliminar-usuarios`,
         { userId: id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSolicitudes((prev) =>
         prev.filter((solicitud) => solicitud.id !== id)
       );
+      setSuccessMessage("Usuario eliminado correctamente.");
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
+      setErrorMessage("Error al eliminar el usuario.");
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -98,7 +116,7 @@ export default function SolicitudesRegistro() {
         <HeaderAdmin />
         <main className="p-6">
           <div className="flex flex-wrap justify-between mb-6">
-            <div className="w-1/4 p-4 bg-gray-700 rounded-lg" style={{ height: '350px' }}>
+            <div className="w-1/4 p-4 bg-gray-700 rounded-lg" style={{ height: "350px" }}>
               <h2 className="text-lg font-bold mb-4 text-center">
                 Estatus de las Solicitudes
               </h2>
@@ -117,9 +135,20 @@ export default function SolicitudesRegistro() {
                       : "bg-blue-500 hover:bg-blue-600 text-white"
                   }`}
                 >
-                  {isFetching ? "Recargando..." : "Recargar"}
+                  {isFetching ? <FaSpinner className="animate-spin" /> : "Recargar"}
                 </button>
               </div>
+
+              {errorMessage && (
+                <div className="text-red-500 text-center mb-4">
+                  {errorMessage}
+                </div>
+              )}
+              {successMessage && (
+                <div className="text-green-500 text-center mb-4">
+                  {successMessage}
+                </div>
+              )}
 
               <div className="flex justify-between items-center mb-4">
                 <div>
@@ -164,9 +193,7 @@ export default function SolicitudesRegistro() {
                     {currentSolicitudes.map((solicitud, idx) => (
                       <tr
                         key={idx}
-                        className={
-                          idx % 2 === 0 ? "bg-gray-600" : "bg-gray-700"
-                        }
+                        className={idx % 2 === 0 ? "bg-gray-600" : "bg-gray-700"}
                       >
                         <td className="p-3">{solicitud.id}</td>
                         <td className="p-3">{solicitud.username}</td>
@@ -174,9 +201,7 @@ export default function SolicitudesRegistro() {
                         <td className="p-3">{solicitud.email}</td>
                         <td className="p-3">{solicitud.phoneNumber}</td>
                         <td className="p-3">{solicitud.role}</td>
-                        <td className="p-3">
-                          {solicitud.permiso ? "Sí" : "No"}
-                        </td>
+                        <td className="p-3">{solicitud.permiso ? "Sí" : "No"}</td>
                         <td className="p-3 flex space-x-2">
                           <button
                             onClick={() => handleAccept(solicitud.id)}

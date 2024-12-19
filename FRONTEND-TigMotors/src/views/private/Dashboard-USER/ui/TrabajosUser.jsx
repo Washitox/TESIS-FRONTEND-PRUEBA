@@ -5,56 +5,105 @@ import axios from "axios";
 
 function TrabajosUser() {
   const [trabajos, setTrabajos] = useState([]);
-  const [fechaInicio, setFechaInicio] = useState("");
-  const [fechaFin, setFechaFin] = useState("");
+  const [prioridadFilter, setPrioridadFilter] = useState("");
+  const [estadoFilter, setEstadoFilter] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const getToken = () => {
-    return localStorage.getItem("authToken");
+  const getToken = () => localStorage.getItem("authToken");
+
+  // Función para obtener trabajos según prioridad
+  const fetchByPrioridad = async (prioridad) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Sesión expirada. Por favor, inicie sesión nuevamente.");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:8085/api-user/prioridad-ticket/${prioridad}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTrabajos(response.data);
+      setErrorMessage(null); // Limpiar mensajes de error
+    } catch (error) {
+      console.error("Error al filtrar por prioridad:", error);
+      setErrorMessage("No se pudieron cargar los trabajos por prioridad.");
+    }
   };
 
+  // Función para obtener trabajos según estado
+  const fetchByEstado = async (estado) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Sesión expirada. Por favor, inicie sesión nuevamente.");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:8085/api-user/estado-ticket/${estado}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTrabajos(response.data);
+      setErrorMessage(null); // Limpiar mensajes de error
+    } catch (error) {
+      console.error("Error al filtrar por estado:", error);
+      setErrorMessage("No se pudieron cargar los trabajos por estado.");
+    }
+  };
+
+  // Función para manejar el cambio en el filtro de prioridad
+  const handlePrioridadChange = (prioridad) => {
+    setPrioridadFilter(prioridad);
+    if (prioridad) {
+      fetchByPrioridad(prioridad);
+    } else {
+      fetchTrabajos(); // Si no hay prioridad seleccionada, cargar todos
+    }
+  };
+
+  // Función para manejar el cambio en el filtro de estado
+  const handleEstadoChange = (estado) => {
+    setEstadoFilter(estado);
+    if (estado) {
+      fetchByEstado(estado);
+    } else {
+      fetchTrabajos(); // Si no hay estado seleccionado, cargar todos
+    }
+  };
+
+  // Función para obtener todos los trabajos
   const fetchTrabajos = async () => {
     try {
       const token = getToken();
-      if (!token) return;
+      if (!token) {
+        setErrorMessage("Sesión expirada. Por favor, inicie sesión nuevamente.");
+        return;
+      }
 
-      const response = await axios.get("http://localhost:8085/api-user/historial-solicitud", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "http://localhost:8085/api-user/historial-solicitud",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setTrabajos(response.data);
+      setErrorMessage(null); // Limpiar mensajes de error
     } catch (error) {
       console.error("Error al obtener trabajos:", error);
       setErrorMessage("No se pudieron cargar los trabajos.");
     }
   };
 
-  const handleFiltrar = async () => {
-    try {
-      const token = getToken();
-      if (!token) return;
-
-      const response = await axios.get(
-        `http://localhost:8085/api-user/filtrar-trabajos`,
-        {
-          params: { fechaInicio, fechaFin },
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setTrabajos(response.data);
-    } catch (error) {
-      console.error("Error al filtrar trabajos:", error);
-      setErrorMessage("Error al filtrar los trabajos.");
-    }
-  };
-
+  // Paginación
   const totalPages = Math.ceil(trabajos.length / itemsPerPage);
   const paginatedTrabajos = trabajos.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  // Efecto inicial para cargar todos los trabajos
   useEffect(() => {
     fetchTrabajos();
   }, []);
@@ -73,7 +122,7 @@ function TrabajosUser() {
         <main className="p-6">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Trabajos Realizados</h1>
+              <h1 className="text-2xl font-bold">Historial de Trabajos</h1>
               <button
                 onClick={fetchTrabajos}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
@@ -82,11 +131,47 @@ function TrabajosUser() {
               </button>
             </div>
 
-            {/* Controles superiores */}
-            <div className="flex justify-between items-center mb-4">
+            {/* Filtros superiores */}
+            <div className="flex justify-between items-center mb-4 gap-4">
+              {/* Filtro por prioridad */}
+              <div>
+                <label htmlFor="prioridadFilter" className="block text-sm font-medium">
+                  Prioridad
+                </label>
+                <select
+                  id="prioridadFilter"
+                  value={prioridadFilter}
+                  onChange={(e) => handlePrioridadChange(e.target.value)}
+                  className="bg-gray-700 text-white p-2 rounded border border-gray-600"
+                >
+                  <option value="">Todas</option>
+                  <option value="ALTA">Alta</option>
+                  <option value="MEDIA">Media</option>
+                  <option value="BAJA">Baja</option>
+                </select>
+              </div>
+
+              {/* Filtro por estado */}
+              <div>
+                <label htmlFor="estadoFilter" className="block text-sm font-medium">
+                  Estado
+                </label>
+                <select
+                  id="estadoFilter"
+                  value={estadoFilter}
+                  onChange={(e) => handleEstadoChange(e.target.value)}
+                  className="bg-gray-700 text-white p-2 rounded border border-gray-600"
+                >
+                  <option value="">Todos</option>
+                  <option value="TRABAJO_PENDIENTE">Pendiente</option>
+                  <option value="TRABAJO_EN_PROGRESO">En Progreso</option>
+                  <option value="TRABAJO_TERMINADO">Terminado</option>
+                </select>
+              </div>
+
               {/* Selección de elementos por página */}
               <div>
-                <label htmlFor="itemsPerPage" className="block text-sm font-medium mb-1">
+                <label htmlFor="itemsPerPage" className="block text-sm font-medium">
                   Mostrar
                 </label>
                 <select
@@ -100,40 +185,6 @@ function TrabajosUser() {
                   <option value={15}>15</option>
                 </select>
               </div>
-
-              {/* Filtros por fecha */}
-              <div className="flex items-center gap-4">
-                <div>
-                  <label htmlFor="fechaInicio" className="block text-sm font-medium">
-                    Fecha de Inicio
-                  </label>
-                  <input
-                    type="date"
-                    id="fechaInicio"
-                    value={fechaInicio}
-                    onChange={(e) => setFechaInicio(e.target.value)}
-                    className="bg-gray-700 text-white p-2 rounded border border-gray-600"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="fechaFin" className="block text-sm font-medium">
-                    Fecha de Fin
-                  </label>
-                  <input
-                    type="date"
-                    id="fechaFin"
-                    value={fechaFin}
-                    onChange={(e) => setFechaFin(e.target.value)}
-                    className="bg-gray-700 text-white p-2 rounded border border-gray-600"
-                  />
-                </div>
-                <button
-                  onClick={handleFiltrar}
-                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                >
-                  Filtrar
-                </button>
-              </div>
             </div>
 
             {/* Tabla de trabajos */}
@@ -141,15 +192,14 @@ function TrabajosUser() {
               <table className="w-full text-left">
                 <thead className="bg-gray-700">
                   <tr>
-                    <th className="p-3">ID</th>
-                    <th className="p-3">Descripción</th>
+                    <th className="p-3">ID Ticket</th>
+                    <th className="p-3">Usuario</th>
+                    <th className="p-3">ID Solicitud</th>
                     <th className="p-3">Prioridad</th>
-                    <th className="p-3">Trabajo Realizado</th>
                     <th className="p-3">Estado</th>
-                    <th className="p-3">Fecha Inicio</th>
-                    <th className="p-3">Fecha Fin</th>
-                    <th className="p-3">Precio</th>
-                    <th className="p-3">Valor Cancelado</th>
+                    <th className="p-3">Descripción Inicial</th>
+                    <th className="p-3">Descripción del Trabajo</th>
+                    <th className="p-3">Fecha de Creación</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -158,28 +208,17 @@ function TrabajosUser() {
                       key={trabajo.id}
                       className={idx % 2 === 0 ? "bg-gray-600" : "bg-gray-700"}
                     >
-                      <td className="p-3">{trabajo.id}</td>
-                      <td className="p-3">{trabajo.descripcion}</td>
-                      <td className="p-3">{trabajo.prioridad}</td>
-                      <td className="p-3">{trabajo.trabajoRealizado}</td>
-                      <td className="p-3">{trabajo.estado}</td>
-                      <td className="p-3">{trabajo.fechaInicio}</td>
-                      <td className="p-3">{trabajo.fechaFin}</td>
-                      <td className="p-3">{trabajo.precio}</td>
-                      <td className="p-3">{trabajo.valorCancelado}</td>
-                      <td className="p-3 flex gap-2">
-                        <button
-                          onClick={() => console.log(`Ver detalles del trabajo ${trabajo.id}`)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
-                        >
-                          Ver
-                        </button>
-                        <button
-                          onClick={() => console.log(`Eliminar trabajo ${trabajo.id}`)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                        >
-                          Eliminar
-                        </button>
+                      <td className="p-3">{trabajo.id || "N/A"}</td>
+                      <td className="p-3">{trabajo.username || "N/A"}</td>
+                      <td className="p-3">{trabajo.solicitudId || "N/A"}</td>
+                      <td className="p-3">{trabajo.prioridad || "N/A"}</td>
+                      <td className="p-3">{trabajo.estado || "N/A"}</td>
+                      <td className="p-3">{trabajo.descripcionInicial || "N/A"}</td>
+                      <td className="p-3">{trabajo.descripcionTrabajo || "N/A"}</td>
+                      <td className="p-3">
+                        {trabajo.fechaCreacion
+                          ? new Date(trabajo.fechaCreacion).toLocaleDateString()
+                          : "N/A"}
                       </td>
                     </tr>
                   ))}
@@ -190,21 +229,21 @@ function TrabajosUser() {
             {/* Paginación */}
             <div className="flex justify-between items-center mt-4">
               <span className="text-sm text-gray-400">
-                Mostrando {currentPage * itemsPerPage - itemsPerPage + 1} -{" "}
+                Mostrando {Math.min(currentPage * itemsPerPage - itemsPerPage + 1, trabajos.length)} -{" "}
                 {Math.min(currentPage * itemsPerPage, trabajos.length)} de {trabajos.length} entradas
               </span>
               <div className="flex gap-2">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(currentPage - 1)}
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded disabled:opacity-50"
                 >
                   Anterior
                 </button>
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage(currentPage + 1)}
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded disabled:opacity-50"
                 >
                   Siguiente
                 </button>

@@ -26,7 +26,7 @@ function PerfilPersonal() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:8085/api/staff-cds/informacion-perfil",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/informacion-perfil`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

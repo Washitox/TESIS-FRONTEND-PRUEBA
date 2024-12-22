@@ -36,7 +36,7 @@ function EstadoPago() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:8085/api/staff-cds/listado-facturas",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/listado-facturas`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -66,7 +66,7 @@ function EstadoPago() {
       }
 
       const response = await axios.post(
-        "http://localhost:8085/api/staff-cds/listado-con-filtros",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/listado-con-filtros`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -91,7 +91,7 @@ function EstadoPago() {
       }
 
       const response = await axios.put(
-        `http://localhost:8085/api/staff-cds/${facturaId}/actualizar-pago`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/${facturaId}/actualizar-pago`,
         null,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -133,7 +133,7 @@ function EstadoPago() {
       }
   
       const response = await axios.get(
-        "http://localhost:8085/api/staff-cds/lista-nombres-usuarios",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/lista-nombres-usuarios`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -12,7 +12,7 @@ const useAuthStore = create((set) =>({
     //peticiones del login
     login: async (data, navigate) => {
         try{
-            const responde = await axios.post("http://localhost:8085/user/login", data)
+            const responde = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/login-global`, data)
             console.log(response.data)
 
             //guardar variables de api

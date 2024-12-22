@@ -3,7 +3,7 @@ import HeaderUsuario from "./HeaderUsuario";
 import SidebarUser from "./SidebarUser";
 import axios from "axios";
 import { FaEye, FaEyeSlash, FaPencilAlt } from "react-icons/fa";
-
+import { Spinner } from 'keep-react';
 function PerfilUser() {
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -26,10 +26,13 @@ function PerfilUser() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const getToken = () => localStorage.getItem("authToken");
 
   const fetchUserInfo = async () => {
+    setIsLoading(true); 
     try {
       const token = getToken();
       const response = await axios.get(
@@ -41,30 +44,36 @@ function PerfilUser() {
       setUserInfo(response.data);
     } catch (error) {
       console.error("Error al obtener la información del usuario:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   const handlePasswordChange = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
-
+    setIsLoading(true); // Inicia el spinner
+  
     if (passwords.newPassword !== passwords.repeatNewPassword) {
       setErrorMessage("Las contraseñas no coinciden.");
+      setIsLoading(false); // Detiene el spinner
       return;
     }
-
+  
     const requestData = {
       currentPassword: passwords.currentPassword,
       newPassword: passwords.newPassword,
     };
-
+  
     try {
       const token = getToken();
       if (!token) {
         setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+        setIsLoading(false); // Detiene el spinner
         return;
       }
-
+  
       await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api-user/cambiar-contrasena`,
         requestData,
@@ -75,7 +84,7 @@ function PerfilUser() {
           },
         }
       );
-
+  
       setSuccessMessage("Contraseña cambiada exitosamente.");
       setPasswords({ currentPassword: "", newPassword: "", repeatNewPassword: "" });
     } catch (error) {
@@ -83,8 +92,11 @@ function PerfilUser() {
       setErrorMessage(
         error.response?.data?.message || "Error al cambiar la contraseña."
       );
+    } finally {
+      setIsLoading(false); // Detiene el spinner
     }
   };
+  
 
   const handleEditField = (field) => {
     setEditableFields((prev) => ({
@@ -151,7 +163,13 @@ function PerfilUser() {
 
         {/* Contenido del perfil */}
         <main className="p-6">
+
           <div className="bg-gray-800 p-6 rounded-lg max-w-2xl mx-auto">
+          {isLoading && (
+              <div className="flex justify-center my-4">
+                <Spinner /> {/* Muestra el spinner */}
+              </div>
+            )}
             <h1 className="text-2xl font-bold mb-4 text-center">Perfil del Usuario</h1>
 
             {/* Información del perfil */}

@@ -41,7 +41,7 @@ function TrabajosPersonal() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:8085/api/staff-cds/historial-tickets",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/historial-tickets`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -72,7 +72,7 @@ function TrabajosPersonal() {
       }
 
       const response = await axios.post(
-        "http://localhost:8085/api/staff-cds/filtrar-tickets",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/filtrar-tickets`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },

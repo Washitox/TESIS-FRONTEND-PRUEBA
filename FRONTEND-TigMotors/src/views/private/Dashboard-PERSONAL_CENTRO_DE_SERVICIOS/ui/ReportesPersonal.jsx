@@ -37,7 +37,7 @@ function ReportesPersonal() {
         return;
       }
       const response = await axios.get(
-        "http://localhost:8085/api/staff-cds/listado-facturas",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/listado-facturas`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -67,7 +67,7 @@ function ReportesPersonal() {
       }
 
       const response = await axios.post(
-        "http://localhost:8085/api/staff-cds/listado-con-filtros",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/listado-con-filtros`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -108,7 +108,7 @@ function ReportesPersonal() {
       };
   
       const response = await axios.post(
-        "http://localhost:8085/api/staff-cds/descargar-pdf",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/descargar-pdf`,
         payload,
         {
           headers: {
@@ -171,7 +171,7 @@ function ReportesPersonal() {
       }
   
       const response = await axios.get(
-        "http://localhost:8085/api/staff-cds/lista-nombres-usuarios",
+        `${import.meta.env.VITE_BACKEND_URL}/api/staff-cds/lista-nombres-usuarios`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

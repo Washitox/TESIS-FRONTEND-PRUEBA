@@ -220,7 +220,7 @@ function Trabajos() {
               </button>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
               <table className="w-full text-left table-auto">
                 <thead className="bg-gray-700">
                   <tr>

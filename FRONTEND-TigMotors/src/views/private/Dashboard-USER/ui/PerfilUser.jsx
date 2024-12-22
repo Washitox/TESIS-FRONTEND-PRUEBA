@@ -156,12 +156,10 @@ function PerfilUser() {
 
             {/* Información del perfil */}
             <div className="space-y-4">
-              {["username", "businessName", "email", "phoneNumber"].map((field) => (
+              {["businessName", "email", "phoneNumber"].map((field) => (
                 <div key={field}>
                   <label className="block text-sm font-medium text-gray-400">
-                    {field === "username"
-                      ? "Nombre"
-                      : field === "businessName"
+                    {field === "businessName"
                       ? "Empresa"
                       : field === "email"
                       ? "Correo Electrónico"
@@ -193,7 +191,14 @@ function PerfilUser() {
                   </div>
                 </div>
               ))}
+              <div>
+                <label className="block text-sm font-medium text-gray-400">Nombre</label>
+                <div className="p-3 bg-gray-700 rounded-md flex-1">
+                  {userInfo.username || "N/A"}
+                </div>
+              </div>
             </div>
+
 
             {/* Botón de guardar */}
             {isEditing && (

@@ -234,7 +234,7 @@ function TrabajosPersonal() {
             </div>
 
             {/* Tabla de tickets */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
               <table className="w-full text-left">
                 <thead className="bg-gray-700 text-white">
                   <tr>

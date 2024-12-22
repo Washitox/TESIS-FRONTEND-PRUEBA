@@ -16,7 +16,9 @@ function ReportesPersonal() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); 
+  const [itemsPerPage, setItemsPerPage] = useState(15); 
+  const [usernames, setUsernames] = useState([]); // Lista de nombres de usuario
+
 
 
   const getToken = () => localStorage.getItem("authToken");
@@ -84,36 +86,57 @@ function ReportesPersonal() {
   const handleDownloadPDF = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
-
+  
     try {
       const token = getToken();
       if (!token) {
         setErrorMessage("No se encontró un token de autenticación.");
         return;
       }
-
+  
+      // Validar que las fechas están presentes y en el formato correcto
+      if (!formData.fechaInicio || !formData.fechaFin) {
+        setErrorMessage("Ambas fechas, inicio y fin, son obligatorias.");
+        return;
+      }
+  
+      const payload = {
+        fechaInicio: formatDate(formData.fechaInicio), // Convertir al formato yyyy/MM/dd
+        fechaFin: formatDate(formData.fechaFin), // Convertir al formato yyyy/MM/dd
+        username: formData.username,
+        estadoPago: formData.estadoPago,
+      };
+  
       const response = await axios.post(
         "http://localhost:8085/api/staff-cds/descargar-pdf",
+        payload,
         {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          responseType: "blob", // Manejar la respuesta como archivo
         }
       );
-
+  
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "facturas.pdf");
       document.body.appendChild(link);
       link.click();
-      link.parentNode.removeChild(link);
-
+      document.body.removeChild(link);
+  
       setSuccessMessage("PDF descargado exitosamente.");
     } catch (error) {
       console.error("Error al descargar el PDF:", error);
-      setErrorMessage("No se pudo descargar el PDF.");
+      setErrorMessage(
+        error.response?.data?.message || "No se pudo descargar el PDF."
+      );
     }
   };
+  
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -139,9 +162,40 @@ function ReportesPersonal() {
     setFilteredFacturas(facturas); // Resetear a todas las facturas
   };
 
+  const fetchUsernames = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("No se encontró un token de autenticación.");
+        return;
+      }
+  
+      const response = await axios.get(
+        "http://localhost:8085/api/staff-cds/lista-nombres-usuarios",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setUsernames(response.data); // Guardar la lista de nombres en el estado
+    } catch (error) {
+      console.error("Error al obtener los nombres de usuario:", error);
+      setErrorMessage("No se pudieron cargar los nombres de usuario.");
+    }
+  };
+  
+
   useEffect(() => {
     fetchAllFacturas();
-  }, []);
+    fetchUsernames(); 
+    if (errorMessage || successMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null);
+        setSuccessMessage(null);
+      }, 5000);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage, successMessage]);
 
   const totalPages = Math.ceil(filteredFacturas.length / itemsPerPage);
   const paginatedFacturas = filteredFacturas.slice(
@@ -158,6 +212,12 @@ function ReportesPersonal() {
         <main className="p-6">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h1 className="text-2xl font-bold text-white mb-6">Facturas</h1>
+            {(errorMessage || successMessage) && (
+              <div className="mb-4 text-center">
+                {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+                {successMessage && <p className="text-green-500">{successMessage}</p>}
+              </div>
+            )}
             <div>
               <label className="text-sm text-gray-400 mr-1 ">Mostrar:</label>
               <select
@@ -192,15 +252,21 @@ function ReportesPersonal() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-400">Usuario</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  className="w-full p-2 bg-gray-700 text-white rounded"
-                />
-              </div>
+              <label className="block text-sm text-gray-400">Usuario</label>
+              <select
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className="w-full p-2 bg-gray-700 text-white rounded"
+              >
+                <option value="">Seleccione un usuario</option>
+                {usernames.map((user, index) => (
+                  <option key={index} value={user}>
+                    {user}
+                  </option>
+                ))}
+              </select>
+            </div>  
               <div>
                 <label className="block text-sm text-gray-400">Estado de Pago</label>
                 <select
@@ -221,23 +287,23 @@ function ReportesPersonal() {
                 onClick={handleFilter}
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
               >
-                Filtrar
+                <FaFilter className="mr-2" /> Filtrar
               </button>
               <button
                 onClick={handleDownloadPDF}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               >
-                Descargar PDF
+                <FaFilePdf className="mr-2" /> Descargar PDF
               </button>
               <button
                 onClick={handleClearFilters}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
               >
-                Limpiar Filtros
+                <FaTrash className="mr-2" /> Limpiar
               </button>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
               <table className="w-full text-left">
                 <thead className="bg-gray-700 text-white">
                   <tr>
@@ -279,7 +345,8 @@ function ReportesPersonal() {
                   ))}
                 </tbody>
               </table>
-              <div className="flex justify-between items-center mt-4">
+            </div>
+            <div className="flex justify-between items-center mt-4">
                 <span className="text-sm text-white">
                   Mostrando {currentPage * itemsPerPage - itemsPerPage + 1} -{" "}
                   {Math.min(currentPage * itemsPerPage, filteredFacturas.length)}{" "}
@@ -302,8 +369,6 @@ function ReportesPersonal() {
                   </button>
                 </div>
               </div>
-
-            </div>
           </div>
         </main>
       </div>

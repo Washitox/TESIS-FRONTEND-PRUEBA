@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaBriefcase, FaFileAlt, FaUser, FaUsers } from "react-icons/fa";
+import { FaBriefcase, FaFileAlt, FaUser, FaUsers, FaMoneyCheckAlt } from "react-icons/fa"; // Importar el nuevo icono
 
 function SidebarPersonal() {
   const location = useLocation();
@@ -8,7 +8,8 @@ function SidebarPersonal() {
   // Opciones del menú
   const menuItems = [
     { name: "Trabajos", path: "/personal/trabajos", icon: <FaBriefcase /> },
-    { name: "Usuarios", path: "/personal/usuarios", icon: <FaUsers /> }, // Nueva opción agregada
+    { name: "Estado de Pago", path: "/personal/estado-pago", icon: <FaMoneyCheckAlt /> }, // Nueva sección
+    { name: "Usuarios", path: "/personal/usuarios", icon: <FaUsers /> },
     { name: "Generar Reportes", path: "/personal/reportes", icon: <FaFileAlt /> },
     { name: "Perfil", path: "/personal/perfil", icon: <FaUser /> },
   ];

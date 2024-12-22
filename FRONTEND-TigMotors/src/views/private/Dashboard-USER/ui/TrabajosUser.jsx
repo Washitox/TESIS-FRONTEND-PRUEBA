@@ -188,7 +188,7 @@ function TrabajosUser() {
             </div>
 
             {/* Tabla de trabajos */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[350px]">
               <table className="w-full text-left">
                 <thead className="bg-gray-700">
                   <tr>

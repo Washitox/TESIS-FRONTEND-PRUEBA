@@ -1,11 +1,18 @@
 import React from "react";
 import Slider from "react-slick";
-import image1 from "../../../../assets/images/image1.png";
-import image2 from "../../../../assets/images/image2.png";
-import image3 from "../../../../assets/images/image3.png";
-import image4 from "../../../../assets/images/image4.png";
-import image5 from "../../../../assets/images/image5.png";
-import image6 from "../../../../assets/images/image5.png";
+import sueldaenfrio from "../../../../assets/images/Suelda en frio.png";
+import sueldainjerto from "../../../../assets/images/Suelda en injerto.png"
+import rellenosuperficies from "../../../../assets/images/Relleno de superficies.png"
+import verificacion from "../../../../assets/images/Verificacion de pruebas.png"
+import diagnostico from "../../../../assets/images/Diagnostico.png"
+import cepillados from "../../../../assets/images/Cepillado.png"
+import fabricacion from "../../../../assets/images/Crear piezas.png"
+import camisillas from "../../../../assets/images/Cambio de camisillas.png"
+import helicoides from "../../../../assets/images/Colocación de helicoides.png"
+import tintas from "../../../../assets/images/Colocación de tintes.png"
+import asesoria from "../../../../assets/images/Asesoria de sueldas.png"
+import lavado from "../../../../assets/images/Limpieza de blocks.png"
+import transporte from "../../../../assets/images/Servicio de transporte.png"
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 
@@ -14,7 +21,7 @@ export default function TrabajosTig() {
   const trabajos = [
     {
       title: "Soldadura",
-      images: [image1, image2, image3],
+      images: [sueldaenfrio, sueldainjerto, rellenosuperficies],
       description: [
         "Suelda en frío",
         "Suelda en Injerto",
@@ -23,7 +30,7 @@ export default function TrabajosTig() {
     },
     {
       title: "Pruebas Hidrostática",
-      images: [image2, image3, image4], 
+      images: [verificacion, diagnostico], 
       description: [
         "Verificación",
         "Diagnóstico",
@@ -32,17 +39,17 @@ export default function TrabajosTig() {
     },
     {
       title: "Cepillados",
-      images: [image3],
+      images: [cepillados],
       description: ["Nivelación de superficies"],
     },
     {
       title: "Torno",
-      images: [image4], 
+      images: [fabricacion], 
       description: ["Fabricación de piezas"],
     },
     {
       title: "Extras",
-      images: [image6, image5, image1, image3, image4, image2],
+      images: [camisillas, helicoides, tintas, asesoria, lavado, transporte],
       description: [
         "Cambio de camisillas",
         "Colocación de Helicoides",
@@ -85,7 +92,7 @@ function TrabajoCard({ trabajo }) {
   return (
     <div
       className="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center text-center"
-      style={{ minHeight: "500px" }}
+      style={{ minHeight: "300px" }}
     >
       <div className="relative w-full h-40 mb-4">
         {images.length > 1 ? (
@@ -95,7 +102,7 @@ function TrabajoCard({ trabajo }) {
                 <img
                   src={img}
                   alt={`${trabajo.title} ${idx + 1}`}
-                  className="w-full h-40 object-contain rounded-md"
+                  className="w-full h-40 object-contain rounded-md basis-10"
                 />
               </div>
             ))}

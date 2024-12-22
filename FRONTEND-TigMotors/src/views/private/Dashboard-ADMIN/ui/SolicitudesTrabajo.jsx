@@ -16,6 +16,8 @@ function SolicitudesTrabajo() {
   const [editedValues, setEditedValues] = useState({}); // Valores editados
 
   const filterRef = useRef();
+  const [message, setMessage] = useState({ text: "", type: "" });
+
 
   const getToken = () => {
     return localStorage.getItem("authToken");
@@ -260,10 +262,21 @@ function SolicitudesTrabajo() {
                   </div>
                 )}
               </div>
+              
             </div>
+            
 
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
+            {message.text && (
+              <p
+                className={`text-center mb-4 ${
+                  message.type === "success" ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {message.text}
+              </p>
+            )}
               <table className="w-full text-left table-auto">
                 <thead className="bg-gray-700">
                   <tr>
@@ -276,7 +289,6 @@ function SolicitudesTrabajo() {
                     <th className="p-3">Cotización</th>
                     <th className="p-3">Estado de Cotización</th>
                     <th className="p-3">Fecha</th>
-                    <th className="p-3">Hora</th>
                     <th className="p-3">Estado de Pago</th>
                     <th className="p-3">Acciones</th>
                   </tr>
@@ -320,7 +332,6 @@ function SolicitudesTrabajo() {
                       </td>
                       <td className="p-3">{solicitud.cotizacionAceptada || "No Aceptada"}</td>
                       <td className="p-3">{solicitud.fechaCreacion}</td>
-                      <td className="p-3">{solicitud.horaCreacion}</td>
                       <td className="p-3">{solicitud.pago || "Pendiente"}</td>
                       <td className="p-3 flex space-x-2">
                         {editingRow === solicitud.idSolicitud ? (

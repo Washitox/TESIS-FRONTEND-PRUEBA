@@ -3,8 +3,8 @@ import jefe from "../../../../assets/images/Jefe_TigMotors.png";
 import secretaria from "../../../../assets/images/Secretaria_TigMotors.jpg";
 import transportador from "../../../../assets/images/Transportador_TigMotors.png";
 import trabajador from "../../../../assets/images/Trabajador_TigMotors.png";
-import frontend from "../../../../assets/images/Tig-Imagen-Fondo.png";
-import backend from "../../../../assets/images/Tig-Imagen-Fondo.png";
+import frontend from "../../../../assets/images/Frontend_TigMotors.png";
+import backend from "../../../../assets/images/Backend_TigMotors.png";
 
 const equipo = [
   {

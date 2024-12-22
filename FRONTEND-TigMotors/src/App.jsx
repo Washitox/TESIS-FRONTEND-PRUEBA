@@ -22,6 +22,7 @@ import PerfilUser from "./views/private/Dashboard-USER/ui/PerfilUser";
 import TrabajosUser from "./views/private/Dashboard-USER/ui/TrabajosUser";
 import SolicitarTrabajoUser from "./views/private/Dashboard-USER/ui/SolicitarTrabajoUser";
 import TrabajosPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/TrabajosPersonal";
+import EstadoPago from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/EstadoPago";
 import ReportesPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/ReportesPersonal";
 import PerfilPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/PerfilPersonal";
 import UsuariosPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/UsuariosPersonal";
@@ -52,6 +53,7 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={["PERSONAL_CENTRO_DE_SERVICIOS"]} />}>
               <Route path="/personal/" element={<DashboardPersonalView />} />
               <Route path="/personal/trabajos" element={<TrabajosPersonal />} />
+              <Route path="/personal/estado-pago" element={<EstadoPago />} />
               <Route path="/personal/usuarios" element={<UsuariosPersonal />} />
               <Route path="/personal/reportes" element={<ReportesPersonal />} />
               <Route path="/personal/perfil" element={<PerfilPersonal />} />

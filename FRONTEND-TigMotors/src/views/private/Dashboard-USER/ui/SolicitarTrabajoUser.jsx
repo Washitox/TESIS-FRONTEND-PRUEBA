@@ -185,9 +185,9 @@ const SolicitarTrabajoUser = () => {
       <SidebarUser />
       <div className="flex-1 flex flex-col">
         <HeaderUsuario />
-        <main className="p-6 grid grid-cols-3 gap-6">
+        <main className="p-6 grid grid-cols-[20%,auto] gap-6">
           {/* Formulario */}
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg col-span-2">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4 text-center">Solicitar Trabajo</h2>
             <textarea
               placeholder="Describa pieza y daño"
@@ -214,7 +214,7 @@ const SolicitarTrabajoUser = () => {
           </div>
 
           {/* Tabla */}
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg col-span-3">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h1 className="text-2xl font-bold mb-4 text-center">Historial de Solicitudes</h1>
 
             {/* Filtros */}
@@ -252,77 +252,87 @@ const SolicitarTrabajoUser = () => {
               </button>
             </div>
 
-            {/* Tabla */}
-            <table className="table-auto w-full">
-              <thead className="bg-gray-700">
-                <tr>
-                  <th className="px-2 py-2">ID Solicitud</th>
-                  <th className="px-2 py-2">Descripción Inicial</th>
-                  <th className="px-2 py-2">Descripción de Trabajo</th>
-                  <th className="px-2 py-2">Estado</th>
-                  <th className="px-2 py-2">Prioridad</th>
-                  <th className="px-2 py-2">Cotización</th>
-                  <th className="px-2 py-2">Est Cotización</th>
-                  <th className="px-2 py-2">Fecha</th>
-                  <th className="px-2 py-2">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedSolicitudes.map((sol) => (
-                  <tr key={sol.idSolicitud} className="bg-gray-600">
-                    <td className="px-4 py-2">{sol.idSolicitud}</td>
-                    <td className="px-4 py-2">
-                      {editingSolicitud === sol.idSolicitud ? (
-                        <input
-                          type="text"
-                          value={editedDescriptions[sol.idSolicitud] || sol.descripcionInicial}
-                          onChange={(e) =>
-                            setEditedDescriptions({
-                              ...editedDescriptions,
-                              [sol.idSolicitud]: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white p-2 rounded"
-                        />
-                      ) : (
-                        sol.descripcionInicial
-                      )}
-                    </td>
-                    <td className="px-4 py-2">{sol.descripcionTrabajo || "En espera"}</td>
-                    <td className="px-4 py-2">{sol.estado}</td>
-                    <td className="px-4 py-2">{sol.prioridad}</td>
-                    <td className="px-4 py-2">{sol.cotizacion || "N/A"}</td>
-                    <td className="px-4 py-2">{sol.cotizacionAceptada || "N/A"}</td>
-                    <td className="px-4 py-2">{sol.fechaCreacion || "N/A"}</td>
-                    <td className="px-4 py-2 flex space-x-2">
-                      {editingSolicitud === sol.idSolicitud ? (
-                        <FaSave
-                          onClick={() => handleSaveDescription(sol.idSolicitud)}
-                          className="text-green-500 cursor-pointer"
-                        />
-                      ) : (
-                        <FaPencilAlt
-                          onClick={() => setEditingSolicitud(sol.idSolicitud)}
-                          className="text-blue-500 cursor-pointer"
-                        />
-                      )}
-                      <FaCheck
-                        onClick={() => handleAcceptCotizacion(sol.idSolicitud)}
-                        className="text-green-500 cursor-pointer"
-                      />
-                      <FaTimes
-                        onClick={() => handleRejectCotizacion(sol.idSolicitud)}
-                        className="text-red-500 cursor-pointer"
-                      />
-                      <FaTrash
-                        onClick={() => handleDelete(sol.idSolicitud)}
-                        className="text-red-500 cursor-pointer"
-                      />
+            {message.text && (
+                  <tr>
+                    <td colSpan="9" className="text-center text-green-500 py-2">
+                      {message.text}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                )}
+
+            {/* Tabla */}
+            <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+                <table className="table-auto w-full">
+                <thead className="bg-gray-700">
+                  <tr>
+                    <th className="px-2 py-2">ID Solicitud</th>
+                    <th className="px-2 py-2">Descripción Inicial</th>
+                    <th className="px-2 py-2">Descripción de Trabajo</th>
+                    <th className="px-2 py-2">Estado</th>
+                    <th className="px-2 py-2">Prioridad</th>
+                    <th className="px-2 py-2">Cotización</th>
+                    <th className="px-2 py-2">Est Cotización</th>
+                    <th className="px-2 py-2">Fecha</th>
+                    <th className="px-2 py-2">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedSolicitudes.map((sol) => (
+                    <tr key={sol.idSolicitud} className="bg-gray-600">
+                      <td className="px-4 py-2">{sol.idSolicitud}</td>
+                      <td className="px-4 py-2">
+                        {editingSolicitud === sol.idSolicitud ? (
+                          <input
+                            type="text"
+                            value={editedDescriptions[sol.idSolicitud] || sol.descripcionInicial}
+                            onChange={(e) =>
+                              setEditedDescriptions({
+                                ...editedDescriptions,
+                                [sol.idSolicitud]: e.target.value,
+                              })
+                            }
+                            className="bg-gray-700 text-white p-2 rounded"
+                          />
+                        ) : (
+                          sol.descripcionInicial
+                        )}
+                      </td>
+                      <td className="px-4 py-2">{sol.descripcionTrabajo || "En espera"}</td>
+                      <td className="px-4 py-2">{sol.estado}</td>
+                      <td className="px-4 py-2">{sol.prioridad}</td>
+                      <td className="px-4 py-2">{sol.cotizacion || "N/A"}</td>
+                      <td className="px-4 py-2">{sol.cotizacionAceptada || "N/A"}</td>
+                      <td className="px-4 py-2">{sol.fechaCreacion || "N/A"}</td>
+                      <td className="px-4 py-2 flex space-x-2">
+                        {editingSolicitud === sol.idSolicitud ? (
+                          <FaSave
+                            onClick={() => handleSaveDescription(sol.idSolicitud)}
+                            className="text-green-500 cursor-pointer"
+                          />
+                        ) : (
+                          <FaPencilAlt
+                            onClick={() => setEditingSolicitud(sol.idSolicitud)}
+                            className="text-blue-500 cursor-pointer"
+                          />
+                        )}
+                        <FaCheck
+                          onClick={() => handleAcceptCotizacion(sol.idSolicitud)}
+                          className="text-green-500 cursor-pointer"
+                        />
+                        <FaTimes
+                          onClick={() => handleRejectCotizacion(sol.idSolicitud)}
+                          className="text-red-500 cursor-pointer"
+                        />
+                        <FaTrash
+                          onClick={() => handleDelete(sol.idSolicitud)}
+                          className="text-red-500 cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             {/* Paginación */}
             <div className="flex justify-between mt-4">

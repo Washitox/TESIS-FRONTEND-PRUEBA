@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../../../assets/images/TigMotors.png";
+import logo from "../../../../assets/images/tigmotors_1734890739.png";
 
 export default function AcercaNosotros() {
   return (
@@ -21,7 +21,7 @@ export default function AcercaNosotros() {
             <img
               src={logo}
               alt="Equipo TigMotors"
-              className="w-40 h-auto rounded-lg shadow-lg" // Tamaño ajustado con w-40
+              className="w-50 h-auto rounded-lg shadow-lg" // Tamaño ajustado con w-40
             />
           </div>
 

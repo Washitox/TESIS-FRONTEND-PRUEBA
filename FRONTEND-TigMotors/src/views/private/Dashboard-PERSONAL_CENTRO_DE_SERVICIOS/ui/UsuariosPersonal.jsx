@@ -127,7 +127,7 @@ function UsuariosPersonal() {
             </div>
 
             {/* Tabla de usuarios */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
               <table className="w-full text-left">
                 <thead className="bg-gray-700">
                   <tr>
